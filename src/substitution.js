@@ -1,12 +1,10 @@
 const substitutionModule = (function () {
   function isValid(alphabet) {
     if (!alphabet || alphabet.length !== 26) return false;
-    for (let i = 0; i < alphabet.length; i++) {
-      for (let j = i + 1; j < alphabet.length; j++) {
-        if (alphabet[i] == alphabet[j]) return false;
-      }
-    }
-    return true;
+
+    // determines that every value within the input alphabet is unique
+    const uniqueChars = new Set(alphabet);
+    return uniqueChars.size === 26;
   }
 
   function substitution(input, alphabet, encode = true) {
@@ -14,29 +12,25 @@ const substitutionModule = (function () {
     let originalAlphabet = "abcdefghijklmnopqrstuvwxyz";
     alphabet = alphabet.toLowerCase();
 
-    if (encode) {
-      let result = "";
-      for (let i = 0; i < input.length; i++) {
-        if (input[i] >= "a" && input[i] <= "z") {
-          let originalIndex = originalAlphabet.indexOf(input[i]);
-          result += alphabet[originalIndex];
-        } else {
-          result += input[i];
-        }
+    let result = "";
+    for (let i = 0; i < input.length; i++) {
+      if (input[i] === " ") {
+        result += " ";
+      } else {
+        //determines which alphabet the letter is indexed depending on encode/decode
+        const charIndex = encode
+          ? originalAlphabet.indexOf(input[i])
+          : alphabet.indexOf(input[i]);
+        result +=
+          // if the letter was found, add the index to the result, if not, add the special character
+          charIndex !== -1
+            ? encode
+              ? alphabet[charIndex]
+              : originalAlphabet[charIndex]
+            : input[i];
       }
-      return result;
-    } else {
-      let result = "";
-      for (let i = 0; i < input.length; i++) {
-        if (input[i] !== " ") {
-          let newIndex = alphabet.indexOf(input[i]);
-          result += originalAlphabet[newIndex];
-        } else {
-          result += input[i];
-        }
-      }
-      return result;
     }
+    return result;
   }
   return {
     substitution,

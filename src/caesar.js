@@ -1,43 +1,30 @@
 const caesarModule = (function () {
   function caesar(input, shift, encode = true) {
+    if (!shift || shift === 0 || shift < -25 || shift > 25) return false;
     input = input.toLowerCase();
     const alphabet = "abcdefghijklmnopqrstuvwxyz";
-    if (!shift || shift === 0 || shift < -25 || shift > 25) return false;
-    if (encode === true) {
-      let result = "";
-      for (let i = 0; i < input.length; i++) {
-        if (input[i] >= "a" && input[i] <= "z") {
-          let letterIndex = alphabet.indexOf(input[i]);
-          let newIndex = letterIndex + shift;
-          if (newIndex > 25) {
-            newIndex -= alphabet.length;
-          } else if (newIndex < 0) {
-            newIndex += alphabet.length;
-          }
-          result += alphabet[newIndex];
-        } else {
-          result += input[i];
-        }
+
+    // determine how many letters, based on the direction, the shift occurs
+    const shiftLetter = (letter, shift, direction) => {
+      const letterIndex = alphabet.indexOf(letter);
+      let shiftedIndex = (letterIndex + shift * direction) % 26;
+      if (shiftedIndex < 0) shiftedIndex += 26;
+      return alphabet[shiftedIndex];
+    };
+
+    let result = "";
+
+    // determines the shift direction
+    const direction = encode ? 1 : -1;
+
+    for (let i = 0; i < input.length; i++) {
+      if (input[i] >= "a" && input[i] <= "z") {
+        result += shiftLetter(input[i], shift, direction);
+      } else {
+        result += input[i];
       }
-      return result;
-    } else {
-      let result = "";
-      for (let i = 0; i < input.length; i++) {
-        if (input[i] >= "a" && input[i] <= "z") {
-          let letterIndex = alphabet.indexOf(input[i]);
-          let newIndex = letterIndex - shift;
-          if (newIndex > 25) {
-            newIndex -= alphabet.length;
-          } else if (newIndex < 0) {
-            newIndex += alphabet.length;
-          }
-          result += alphabet[newIndex];
-        } else {
-          result += input[i];
-        }
-      }
-      return result;
     }
+    return result;
   }
   return {
     caesar,
